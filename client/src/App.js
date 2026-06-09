@@ -5,6 +5,8 @@ import ImageUploader from './components/ImageUploader';
 import ResultsDisplay from './components/ResultsDisplay';
 import ImagePreview from './components/ImagePreview';
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 function App() {
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -29,7 +31,7 @@ function App() {
       const formData = new FormData();
       formData.append('image', file);
 
-      const response = await axios.post('/api/process', formData, {
+      const response = await axios.post(`${API_BASE_URL}/api/process`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
@@ -48,7 +50,7 @@ function App() {
 
   const handleExport = async (format) => {
     try {
-      const response = await axios.post('/api/export', 
+      const response = await axios.post(`${API_BASE_URL}/api/export`, 
         { data: results, format },
         { responseType: 'blob' }
       );
