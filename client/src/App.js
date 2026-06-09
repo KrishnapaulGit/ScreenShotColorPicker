@@ -5,8 +5,8 @@ import ImageUploader from './components/ImageUploader';
 import ResultsDisplay from './components/ResultsDisplay';
 import ImagePreview from './components/ImagePreview';
 
-// Use environment variable for API URL (must be set in Vercel)
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://screenshotcolorpickerbackend.onrender.com';
+// API endpoint for backend server (Render)
+const API_BASE_URL = 'https://screenshotcolorpickerbackend.onrender.com';
 
 function App() {
   const [results, setResults] = useState(null);
