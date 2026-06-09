@@ -1,0 +1,30 @@
+{
+  "name": "ScreenshotColorPicker",
+  "displayName": "Screenshot Color Picker",
+  "description": "Extract text, bounding boxes, and colors from screenshots",
+  "version": "1.0.0",
+  "publisher": "Krishna Paul",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Visualization",
+    "Other"
+  ],
+  "keywords": [
+    "ocr",
+    "color-extraction",
+    "screenshot",
+    "image-processing",
+    "tesseract"
+  ],
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/screenshot-color-picker"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/screenshot-color-picker/issues"
+  },
+  "homepage": "https://github.com/your-username/screenshot-color-picker#readme"
+}

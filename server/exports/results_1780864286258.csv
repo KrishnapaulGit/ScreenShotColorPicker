@@ -1,0 +1,8 @@
+"text","confidence","backgroundColor","colorName","rgb","bbox"
+"AUTO",95,"#FFFF96","Yellow","[255,255,150]","{""x"":17,""y"":61,""width"":120,""height"":46}"
+"REPAIR",95,"#FF9696","Red","[255,150,150]","{""x"":140,""y"":49,""width"":144,""height"":69}"
+"INVOICE",95,"#B496D2","Purple","[180,150,210]","{""x"":291,""y"":38,""width"":174,""height"":89}"
+"Invoice No.",93,"#F09696","Red","[240,150,150]","{""x"":121,""y"":148,""width"":136,""height"":51}"
+"10000",96,"#96B4FF","Blue","[150,180,255]","{""x"":262,""y"":150,""width"":103,""height"":44}"
+"Invoice Date:",81,"#FF96D2","Magenta","[255,150,210]","{""x"":125,""y"":221,""width"":151,""height"":39}"
+"Due Date:",92,"#B4FF96","Green","[180,255,150]","{""x"":127,""y"":270,""width"":118,""height"":46}"

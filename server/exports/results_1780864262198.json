@@ -1,0 +1,121 @@
+[
+  {
+    "text": "AUTO",
+    "confidence": 95,
+    "backgroundColor": "#FFFF96",
+    "colorName": "Yellow",
+    "rgb": [
+      255,
+      255,
+      150
+    ],
+    "bbox": {
+      "x": 17,
+      "y": 61,
+      "width": 120,
+      "height": 46
+    }
+  },
+  {
+    "text": "REPAIR",
+    "confidence": 95,
+    "backgroundColor": "#FF9696",
+    "colorName": "Red",
+    "rgb": [
+      255,
+      150,
+      150
+    ],
+    "bbox": {
+      "x": 140,
+      "y": 49,
+      "width": 144,
+      "height": 69
+    }
+  },
+  {
+    "text": "INVOICE",
+    "confidence": 95,
+    "backgroundColor": "#B496D2",
+    "colorName": "Purple",
+    "rgb": [
+      180,
+      150,
+      210
+    ],
+    "bbox": {
+      "x": 291,
+      "y": 38,
+      "width": 174,
+      "height": 89
+    }
+  },
+  {
+    "text": "Invoice No.",
+    "confidence": 93,
+    "backgroundColor": "#F09696",
+    "colorName": "Red",
+    "rgb": [
+      240,
+      150,
+      150
+    ],
+    "bbox": {
+      "x": 121,
+      "y": 148,
+      "width": 136,
+      "height": 51
+    }
+  },
+  {
+    "text": "10000",
+    "confidence": 96,
+    "backgroundColor": "#96B4FF",
+    "colorName": "Blue",
+    "rgb": [
+      150,
+      180,
+      255
+    ],
+    "bbox": {
+      "x": 262,
+      "y": 150,
+      "width": 103,
+      "height": 44
+    }
+  },
+  {
+    "text": "Invoice Date:",
+    "confidence": 81,
+    "backgroundColor": "#FF96D2",
+    "colorName": "Magenta",
+    "rgb": [
+      255,
+      150,
+      210
+    ],
+    "bbox": {
+      "x": 125,
+      "y": 221,
+      "width": 151,
+      "height": 39
+    }
+  },
+  {
+    "text": "Due Date:",
+    "confidence": 92,
+    "backgroundColor": "#B4FF96",
+    "colorName": "Green",
+    "rgb": [
+      180,
+      255,
+      150
+    ],
+    "bbox": {
+      "x": 127,
+      "y": 270,
+      "width": 118,
+      "height": 46
+    }
+  }
+]
