@@ -5,7 +5,8 @@ import ImageUploader from './components/ImageUploader';
 import ResultsDisplay from './components/ResultsDisplay';
 import ImagePreview from './components/ImagePreview';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+// Use relative paths in production (empty REACT_APP_API_URL), localhost in development
+const API_BASE_URL = process.env.REACT_APP_API_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000');
 
 function App() {
   const [results, setResults] = useState(null);
