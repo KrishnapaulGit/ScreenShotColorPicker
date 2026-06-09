@@ -3,6 +3,7 @@ const multer = require('multer');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+const jwt = require('jsonwebtoken');
 const Tesseract = require('tesseract.js');
 const sharp = require('sharp');
 const ExcelJS = require('exceljs');
@@ -15,6 +16,32 @@ const {
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+
+// Authentication middleware for Bearer token
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: 'No token provided. Please provide a Bearer token in Authorization header.'
+    });
+  }
+
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.status(403).json({
+        success: false,
+        message: 'Invalid or expired token',
+        error: err.message
+      });
+    }
+    req.user = user;
+    next();
+  });
+};
 
 // Configure Tesseract to use CDN for WASM files (fixes Vercel deployment)
 Tesseract.setLogging(false);
@@ -1535,6 +1562,97 @@ app.post('/api/export', async (req, res) => {
   }
 
 });
+
+/**
+ * POST /api/generate-token - Generate Bearer token
+ * Body: { name: string, email: string }
+ * Returns: { success: boolean, token: string, expiresIn: string }
+ */
+app.post('/api/generate-token', (req, res) => {
+  const { name, email } = req.body;
+
+  // Validate input
+  if (!name || !email) {
+    return res.status(400).json({
+      success: false,
+      message: 'Name and email are required'
+    });
+  }
+
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid email format'
+    });
+  }
+
+  try {
+    // Generate JWT token with 24-hour expiration
+    const token = jwt.sign(
+      { name, email, iat: Date.now() },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    res.json({
+      success: true,
+      message: 'Token generated successfully',
+      token: token,
+      expiresIn: '24 hours',
+      user: { name, email }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error generating token',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * POST /api/piccolour - Process image with authentication
+ * Headers: Authorization: Bearer <token>
+ * Body: { imageData: base64 string OR image file }
+ * Returns: { success: boolean, data: { text: [...], colors: [...], ... } }
+ */
+app.post('/api/piccolour', authenticateToken, async (req, res) => {
+  try {
+    let imageBuffer;
+
+    // Check if image is sent as base64 in body
+    if (req.body.imageData) {
+      const base64Data = req.body.imageData.replace(/^data:image\/\w+;base64,/, '');
+      imageBuffer = Buffer.from(base64Data, 'base64');
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: 'No image data provided. Send imageData as base64 string in request body.'
+      });
+    }
+
+    // Process image using existing processImage function
+    const result = await processImage(imageBuffer);
+
+    res.json({
+      success: true,
+      message: 'Image processed successfully',
+      user: req.user,
+      data: result
+    });
+
+  } catch (error) {
+    console.error('Error processing image:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error processing image',
+      error: error.message
+    });
+  }
+});
+
 /**
  * GET /api/health - Health check
  */
