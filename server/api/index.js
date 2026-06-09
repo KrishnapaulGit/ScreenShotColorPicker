@@ -16,6 +16,9 @@ const {
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Configure Tesseract to use CDN for WASM files (fixes Vercel deployment)
+Tesseract.setLogging(false);
+
 // Middleware
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
@@ -556,38 +559,44 @@ async function extractTextFromRegion(
     setTimeout(() => reject(new Error('OCR timeout')), 15000)
   );
 
-  const result = await Promise.race([
-    Tesseract.recognize(
-      buffer,
-      'eng',
-      {
-        tessedit_pageseg_mode: 7
-      }
-    ),
-    ocrTimeoutPromise
-  ]);
+  // Create worker with CDN configuration for WASM files
+  const worker = await Tesseract.createWorker({
+    corePath: 'https://cdn.jsdelivr.net/npm/tesseract.js-core@v5/'
+  });
 
-  const cleanedText =
-    result.data.text
+  try {
+    const result = await Promise.race([
+      (async () => {
+        await worker.load();
+        return await worker.recognize(buffer, 'eng');
+      })(),
+      ocrTimeoutPromise
+    ]);
 
-      .replace(
-        /[^a-zA-Z0-9.:/_\-\s]/g,
-        ''
-      )
+    const cleanedText =
+      result.data.text
 
-      .replace(/\s+/g, ' ')
+        .replace(
+          /[^a-zA-Z0-9.:/_\-\s]/g,
+          ''
+        )
 
-      .trim();
+        .replace(/\s+/g, ' ')
 
-  return {
+        .trim();
 
-    text: cleanedText,
+    return {
 
-    confidence:
-      Math.round(
-        result.data.confidence
-      )
-  };
+      text: cleanedText,
+
+      confidence:
+        Math.round(
+          result.data.confidence
+        )
+    };
+  } finally {
+    await worker.terminate();
+  }
 }
 
 function removeDuplicates(
