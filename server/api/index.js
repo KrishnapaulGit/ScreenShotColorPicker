@@ -551,14 +551,21 @@ async function extractTextFromRegion(
 
       .toBuffer();
 
-  const result =
-    await Tesseract.recognize(
+  // Add timeout to OCR to prevent hanging
+  const ocrTimeoutPromise = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('OCR timeout')), 15000)
+  );
+
+  const result = await Promise.race([
+    Tesseract.recognize(
       buffer,
       'eng',
       {
         tessedit_pageseg_mode: 7
       }
-    );
+    ),
+    ocrTimeoutPromise
+  ]);
 
   const cleanedText =
     result.data.text
@@ -1362,23 +1369,22 @@ app.post('/api/process', upload.single('image'), async (req, res) => {
       return res.status(400).json({ error: 'No image file provided' });
     }
 
-    const imageBuffer =
-  req.file.buffer;
+    const imageBuffer = req.file.buffer;
 
-console.log(
-  'Processing image from memory'
-);
-
+    console.log('Processing image from memory');
     console.log('File info:', { size: req.file.size, mimetype: req.file.mimetype });
 
-    const results = await processImage(imageBuffer);
+    // Set a timeout for processing (55 seconds to leave buffer before 60s serverless timeout)
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Image processing timeout - OCR took too long')), 55000)
+    );
+
+    const results = await Promise.race([
+      processImage(imageBuffer),
+      timeoutPromise
+    ]);
 
     console.log('Processing complete. Results:', results.length, 'items');
-
-    // Clean up uploaded file
-    // fs.unlink(imageBuffer, (err) => {
-    //   if (err) console.error('Error deleting file:', err);
-    // });
 
     res.json({
       success: true,
@@ -1387,7 +1393,7 @@ console.log(
       timestamp: new Date().toISOString()
     });
   } catch (error) {
-    console.error('API Error:', error);
+    console.error('API Error:', error.message);
     console.error('Error stack:', error.stack);
     res.status(500).json({
       success: false,
