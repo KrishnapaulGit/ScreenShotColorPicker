@@ -1518,8 +1518,6 @@ app.get('/api/health', (req, res) => {
 });
 
 if (!process.env.VERCEL) {
-  PORT = process.env.PORT || 5000;
-
   app.listen(PORT, () => {
     console.log(`Server running on ${PORT}`);
   });
