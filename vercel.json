@@ -1,35 +1,13 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "client/build"
-      }
-    },
-    {
-      "src": "server/api/index.js",
-      "use": "@vercel/node",
-      "config": {
-        "maxDuration": 60,
-        "memory": 3008
-      }
-    }
-  ],
+  "buildCommand": "npm --prefix client run build",
+  "outputDirectory": "client/build",
+  "installCommand": "npm --prefix client install",
+  "framework": "react",
+  "env": {
+    "REACT_APP_API_URL": "@react-app-api-url"
+  },
   "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/server/api/index.js",
-      "methods": ["GET", "POST", "PUT", "DELETE", "PATCH"]
-    },
-    {
-      "src": "/static/(.*)",
-      "dest": "/static/$1",
-      "headers": {
-        "cache-control": "public, max-age=31536000, immutable"
-      }
-    },
     {
       "src": "/(.*)",
       "dest": "/index.html"

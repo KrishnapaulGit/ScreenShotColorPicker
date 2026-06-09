@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: screenshot-color-picker-api
+    runtime: node
+    region: oregon
+    plan: free
+    branch: master
+    buildCommand: cd server && npm install
+    startCommand: cd server && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+    timeout: 60
+    maxDuration: 60
+    headers:
+      - path: /api/*
+        headers:
+          - key: Cache-Control
+            value: no-cache

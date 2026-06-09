@@ -2,14 +2,14 @@
   "name": "screenshot-color-picker",
   "version": "1.0.0",
   "description": "Extract text, bounding boxes, and colors from screenshots",
-  "main": "server/index.js",
+  "main": "server/api/index.js",
   "scripts": {
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "node server/api/index.js",
+    "dev": "concurrently \"npm --prefix server run dev\" \"npm --prefix client start\"",
+    "server": "npm --prefix server start",
     "client": "npm --prefix client start",
     "build": "npm --prefix client install && npm --prefix client run build",
     "install-all": "npm install && npm --prefix server install && npm --prefix client install",
-    "start": "node server/api/index.js"
+    "start": "npm --prefix server start"
   },
   "keywords": [
     "ocr",
@@ -25,6 +25,7 @@
   "dependencies": {
     "opencv.js": "^1.2.1",
     "sharp": "^0.34.5",
-    "tesseract.js": "^7.0.0"
+    "tesseract.js": "^7.0.0",
+    "tesseract.js-core": "^7.0.0"
   }
 }

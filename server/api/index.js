@@ -19,8 +19,16 @@ const PORT = process.env.PORT || 5000;
 // Configure Tesseract to use CDN for WASM files (fixes Vercel deployment)
 Tesseract.setLogging(false);
 
+// Configure CORS with environment variable support
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN || ['http://localhost:3000', 'http://localhost:5000'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
