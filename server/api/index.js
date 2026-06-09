@@ -1641,50 +1641,44 @@ app.post('/api/generate-token', (req, res) => {
  * Body: { imageData: base64 string OR imagePath: file path }
  * Returns: { success: boolean, data: { text: [...], colors: [...], ... }, user: {...} }
  */
-app.post('/api/piccolour', authenticateToken, async (req, res) => {
-  try {
+app.post(
+  '/api/piccolour',
+  authenticateToken,
+  upload.single('image'),
+  async (req, res) => {
+
     let imageBuffer;
 
-    // Check if image is sent as base64 in body
-    if (req.body.imageData) {
-      const base64Data = req.body.imageData.replace(/^data:image\/\w+;base64,/, '');
+    if (req.file) {
+
+      imageBuffer = req.file.buffer;
+
+    } else if (req.body.imageData) {
+
+      const base64Data = req.body.imageData.replace(
+        /^data:image\/\w+;base64,/,
+        ''
+      );
+
       imageBuffer = Buffer.from(base64Data, 'base64');
-    } else if (req.body.imagePath) {
-      // Read image from file path
-      const imagePath = req.body.imagePath;
-      if (!fs.existsSync(imagePath)) {
-        return res.status(400).json({
-          success: false,
-          message: `Image file not found at path: ${imagePath}`
-        });
-      }
-      imageBuffer = fs.readFileSync(imagePath);
+
     } else {
+
       return res.status(400).json({
         success: false,
-        message: 'No image data provided. Send either imageData (base64 string) or imagePath (file path) in request body.'
+        message: 'Provide image file or imageData'
       });
+
     }
 
-    // Process image using existing processImage function
     const result = await processImage(imageBuffer);
 
     res.json({
       success: true,
-      message: 'Image processed successfully',
-      user: req.user,
       data: result
     });
-
-  } catch (error) {
-    console.error('Error processing image:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error processing image',
-      error: error.message
-    });
   }
-});
+);
 
 /**
  * GET /api/health - Health check
