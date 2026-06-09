@@ -58,7 +58,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // Configure multer for file uploads
 // const uploadDir = path.join(__dirname, 'uploads');
@@ -1589,18 +1589,18 @@ app.post('/api/generate-token', (req, res) => {
   }
 
   try {
-    // Generate JWT token with 24-hour expiration
+    // Generate JWT token with 1-year expiration
     const token = jwt.sign(
       { name, email, iat: Date.now() },
       JWT_SECRET,
-      { expiresIn: '24h' }
+      { expiresIn: '365d' }
     );
 
     res.json({
       success: true,
       message: 'Token generated successfully',
       token: token,
-      expiresIn: '24 hours',
+      expiresIn: '1 year (365 days)',
       user: { name, email }
     });
   } catch (error) {
@@ -1615,8 +1615,8 @@ app.post('/api/generate-token', (req, res) => {
 /**
  * POST /api/piccolour - Process image with authentication
  * Headers: Authorization: Bearer <token>
- * Body: { imageData: base64 string OR image file }
- * Returns: { success: boolean, data: { text: [...], colors: [...], ... } }
+ * Body: { imageData: base64 string OR imagePath: file path }
+ * Returns: { success: boolean, data: { text: [...], colors: [...], ... }, user: {...} }
  */
 app.post('/api/piccolour', authenticateToken, async (req, res) => {
   try {
@@ -1626,10 +1626,20 @@ app.post('/api/piccolour', authenticateToken, async (req, res) => {
     if (req.body.imageData) {
       const base64Data = req.body.imageData.replace(/^data:image\/\w+;base64,/, '');
       imageBuffer = Buffer.from(base64Data, 'base64');
+    } else if (req.body.imagePath) {
+      // Read image from file path
+      const imagePath = req.body.imagePath;
+      if (!fs.existsSync(imagePath)) {
+        return res.status(400).json({
+          success: false,
+          message: `Image file not found at path: ${imagePath}`
+        });
+      }
+      imageBuffer = fs.readFileSync(imagePath);
     } else {
       return res.status(400).json({
         success: false,
-        message: 'No image data provided. Send imageData as base64 string in request body.'
+        message: 'No image data provided. Send either imageData (base64 string) or imagePath (file path) in request body.'
       });
     }
 
