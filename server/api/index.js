@@ -560,18 +560,24 @@ async function extractTextFromRegion(
   );
 
   // Create worker with CDN configuration for WASM files
-  const worker = await Tesseract.createWorker({
-    corePath: 'https://cdn.jsdelivr.net/npm/tesseract.js-core@v5/'
-  });
+ const worker = await Tesseract.createWorker('eng', 1, {
+  workerPath:
+    'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/worker.min.js',
+
+  corePath:
+    'https://cdn.jsdelivr.net/npm/tesseract.js-core@5/tesseract-core-simd.wasm.js',
+
+  langPath:
+    'https://tessdata.projectnaptha.com/4.0.0'
+});
 
   try {
     const result = await Promise.race([
-      (async () => {
-        await worker.load();
-        return await worker.recognize(buffer, 'eng');
-      })(),
-      ocrTimeoutPromise
-    ]);
+  (async () => {
+    return await worker.recognize(buffer);
+  })(),
+  ocrTimeoutPromise
+]);
 
     const cleanedText =
       result.data.text
