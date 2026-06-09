@@ -3,11 +3,6 @@
   "buildCommand": "npm install && npm --prefix client install && npm --prefix client run build",
   "outputDirectory": "client/build",
   "devCommand": "node server/api/index.js",
-  "env": {
-    "REACT_APP_API_URL": {
-      "default": ""
-    }
-  },
   "builds": [
     {
       "src": "server/api/index.js",
