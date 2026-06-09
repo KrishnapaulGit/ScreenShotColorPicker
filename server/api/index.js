@@ -14,6 +14,7 @@ const {
   exportExcel
 } = require('../exportService');
 
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
@@ -1568,43 +1569,65 @@ app.post('/api/export', async (req, res) => {
  * Body: { name: string, email: string }
  * Returns: { success: boolean, token: string, expiresIn: string }
  */
+
+
+// IMPORTANT: Add these BEFORE routes
+
+
 app.post('/api/generate-token', (req, res) => {
-  const { name, email } = req.body;
-
-  // Validate input
-  if (!name || !email) {
-    return res.status(400).json({
-      success: false,
-      message: 'Name and email are required'
-    });
-  }
-
-  // Validate email format
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    return res.status(400).json({
-      success: false,
-      message: 'Invalid email format'
-    });
-  }
-
   try {
-    // Generate JWT token with 1-year expiration
+    console.log('=== Generate Token Request ===');
+    console.log('Headers:', req.headers);
+    console.log('Body:', req.body);
+
+    const { name, email } = req.body || {};
+
+    // Validate input
+    if (!name || !email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name and email are required',
+        receivedBody: req.body
+      });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid email format'
+      });
+    }
+
+    // Generate JWT token
     const token = jwt.sign(
-      { name, email, iat: Date.now() },
-      JWT_SECRET,
-      { expiresIn: '365d' }
+      {
+        name,
+        email
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: '365d'
+      }
     );
 
-    res.json({
+    return res.status(200).json({
       success: true,
       message: 'Token generated successfully',
-      token: token,
-      expiresIn: '1 year (365 days)',
-      user: { name, email }
+      token,
+      expiresIn: '365d',
+      user: {
+        name,
+        email
+      }
     });
+
   } catch (error) {
-    res.status(500).json({
+    console.error('Generate Token Error:', error);
+
+    return res.status(500).json({
       success: false,
       message: 'Error generating token',
       error: error.message

@@ -1,0 +1,12 @@
+HTTP/1.1 400 Bad Request
+X-Powered-By: Express
+Vary: Origin
+Access-Control-Allow-Credentials: true
+Content-Type: application/json; charset=utf-8
+Content-Length: 57
+ETag: W/"39-nUA6W1h/IwA5xEvWGJ3GmIwUqzE"
+Date: Tue, 09 Jun 2026 20:37:13 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"success":false,"message":"Name and email are required"}
